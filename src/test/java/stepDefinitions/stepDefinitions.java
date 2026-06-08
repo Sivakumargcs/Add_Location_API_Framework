@@ -11,6 +11,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
+import resources.ResourcesAPI;
 import resources.Utils;
 import resources.testDataBuild;
 
@@ -26,10 +27,17 @@ public class stepDefinitions extends Utils {
 		res = given().spec(requestSpecification()).body(data.addPlaceApi(Accuracy, Address, Phone, Language, Name));
 	}
 
-	@When("User calls {string} with Post http request")
-	public void user_calls_with_post_http_request(String string) {
+	@When("User calls {string} with {string} http request")
+	public void user_calls_with_http_request(String resource, String method) {
+
+		ResourcesAPI resourceAPI = ResourcesAPI.valueOf(resource);
+		System.out.println(resourceAPI.getResources());
 		resSpec = new ResponseSpecBuilder().expectStatusCode(200).expectContentType(ContentType.JSON).build();
-		response = res.when().post("/maps/api/place/add/json").then().spec(resSpec).extract().response();
+
+		if (method.equalsIgnoreCase("Post"))
+			response = res.when().post(resourceAPI.getResources());
+		else if (method.equalsIgnoreCase("get"))
+			response = res.when().get(resourceAPI.getResources());
 	}
 
 	@Then("The API call got success with status code {int}")
@@ -39,10 +47,17 @@ public class stepDefinitions extends Utils {
 
 	@Then("{string} in response body is {string}")
 	public void in_response_body_is(String keyValue, String expectedValue) {
-		String resp = response.asString();
-		JsonPath js = new JsonPath(resp);
-		assertEquals(js.get(keyValue).toString(), expectedValue);
-		System.out.println(resp);
+		assertEquals(getJsonPath(response, keyValue), expectedValue);
+	}
+
+	@Then("Verify Place id created maps to {string} using {string}")
+	public void verify_place_id_created_maps_to_using(String ExpectedName, String resource) throws IOException {
+		String placeId = getJsonPath(response, "place_id");
+		res = given().spec(requestSpecification()).queryParam("place_id", placeId);
+		user_calls_with_http_request(resource, "get");
+		String actualName = getJsonPath(response, "name");
+		assertEquals(actualName, ExpectedName);
+
 	}
 
 }
