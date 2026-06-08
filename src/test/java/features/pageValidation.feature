@@ -13,5 +13,6 @@ Verify if the place is being sucessfully added using AddPlaceAPI
 		|40|43,Erode|9994599945|English|Siva| 	
 		|50|43,Gobi|9904599945|Tamil|Kumar| 	
 		|60|43,Chennai|8888599945|Malayam|Raj| 
+		|70|43,cbe|7788599945|Hindi|Rama| 
 		
 		
