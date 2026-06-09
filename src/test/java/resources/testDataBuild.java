@@ -28,5 +28,10 @@ public class testDataBuild {
 		a.setTypes(ty);
 		return a;
 	}
+	public String deletePayload(String placeID) {
+		return "{\r\n"
+				+ "    \"place_id\":\""+placeID+"\"\r\n"
+				+ "}";
+		}
 
 }

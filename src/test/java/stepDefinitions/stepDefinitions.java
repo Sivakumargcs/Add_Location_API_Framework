@@ -20,6 +20,7 @@ public class stepDefinitions extends Utils {
 	ResponseSpecification resSpec;
 	Response response;
 	testDataBuild data = new testDataBuild();
+	static String placeId;
 
 	@Given("Add place payload with {int} {string} {string} {string} {string}")
 	public void add_place_payload_with(int Accuracy, String Address, String Phone, String Language, String Name)
@@ -52,12 +53,17 @@ public class stepDefinitions extends Utils {
 
 	@Then("Verify Place id created maps to {string} using {string}")
 	public void verify_place_id_created_maps_to_using(String ExpectedName, String resource) throws IOException {
-		String placeId = getJsonPath(response, "place_id");
+		placeId = getJsonPath(response, "place_id");
 		res = given().spec(requestSpecification()).queryParam("place_id", placeId);
 		user_calls_with_http_request(resource, "get");
 		String actualName = getJsonPath(response, "name");
 		assertEquals(actualName, ExpectedName);
-
+	}
+	
+	@Given("delete place payload")
+	public void delete_place_payload() throws IOException {
+		res = given().spec(requestSpecification()).body(data.deletePayload(placeId));
+		
 	}
 
 }
